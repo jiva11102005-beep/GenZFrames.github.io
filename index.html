@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GENZ Photo Frames - Timeless Memories</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:wght@400;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Custom Styles */
+        html { scroll-behavior: smooth; }
+        body {
+            background-color: #0a1412; /* Dark green-black base */
+            color: #f0e6d2; /* Creamy white for text */
+            font-family: 'Cormorant Garamond', serif;
+            overflow-x: hidden;
+        }
+
+        .font-royal { font-family: 'Playfair Display', serif; }
+        .gold-text { color: #DAA520; }
+        .gold-border { border-color: #DAA520; }
+
+        .animated-background {
+            background: radial-gradient(ellipse at bottom, #013220 0%, #0a1412 100%);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; background-size: 100% 200%;
+            animation: breathingBackground 30s ease-in-out infinite;
+        }
+
+        @keyframes breathingBackground {
+            0%, 100% { background-position: 50% 100%; }
+            50% { background-position: 50% 0%; }
+        }
+        
+        .gold-dust {
+            position: absolute; background-color: #DAA520;
+            border-radius: 50%; opacity: 0;
+            animation: realistic-float 25s infinite linear;
+            box-shadow: 0 0 5px #DAA520, 0 0 10px #DAA520;
+        }
+
+        @keyframes realistic-float {
+            0% { transform: translateY(0); opacity: 0.7; }
+            50% { transform: translateY(-50vh); opacity: 1; }
+            100% { transform: translateY(-100vh); opacity: 0; }
+        }
+
+        .page {
+            position: absolute; width: 100%; min-height: 100vh;
+            top: 0; left: 0; transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
+            opacity: 0; transform: translateY(20px); pointer-events: none;
+            overflow-y: auto; padding-bottom: 100px;
+        }
+        
+        #page1 { display: flex; align-items: center; justify-content: center; }
+
+        .page.active {
+            opacity: 1; transform: translateY(0); pointer-events: auto;
+            position: relative; 
+        }
+        
+        .logo-glow {
+            font-family: 'Cinzel Decorative', serif; font-size: 6rem; font-weight: 700;
+            color: transparent; -webkit-text-stroke: 1.5px #DAA520;
+            animation: mildGlow 5s infinite ease-in-out;
+        }
+        
+        @keyframes mildGlow {
+            0%, 100% { text-shadow: 0 0 8px rgba(218, 165, 32, 0.7), 0 0 12px rgba(218, 165, 32, 0.5); }
+            50% { text-shadow: 0 0 12px rgba(218, 165, 32, 0.8), 0 0 18px rgba(218, 165, 32, 0.6); }
+        }
+        
+        .gold-button {
+            background: transparent; border: 1px solid #DAA520; color: #DAA520;
+            transition: all 0.3s ease;
+        }
+        .gold-button:hover { background: rgba(218, 165, 32, 0.1); box-shadow: 0 0 15px rgba(218, 165, 32, 0.5); transform: translateY(-2px); }
+        .gold-button:focus { outline: none; box-shadow: 0 0 15px rgba(218, 165, 32, 0.5); }
+        .gold-button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .price-card {
+            background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(218, 165, 32, 0.3);
+            backdrop-filter: blur(5px); transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .price-card:hover { transform: scale(1.03); border-color: #DAA520; box-shadow: 0 0 20px rgba(218, 165, 32, 0.4); }
+
+        .gold-input, .gold-textarea {
+            background-color: transparent; border: 1px solid rgba(218, 165, 32, 0.5);
+            color: #f0e6d2; transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .gold-input:focus, .gold-textarea:focus { outline: none; border-color: #DAA520; box-shadow: 0 0 10px rgba(218, 165, 32, 0.3); }
+        .gold-input::placeholder, .gold-textarea::placeholder { color: rgba(240, 230, 210, 0.5); }
+        
+        .review-card { background: rgba(10, 20, 18, 0.5); border: 1px solid rgba(218, 165, 32, 0.2); backdrop-filter: blur(8px); }
+        
+        /* --- Star Rating Styles --- */
+        .star-rating { display: flex; justify-content: center; font-size: 2.5rem; cursor: pointer; }
+        .star-rating .star { color: rgba(218, 165, 32, 0.3); transition: color 0.2s; }
+        .star-rating .star:hover, .star-rating .star.selected { color: #DAA520; text-shadow: 0 0 10px #DAA520; }
+
+        /* --- Custom Notification --- */
+        .notification {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            padding: 12px 24px; border-radius: 8px; font-size: 1rem;
+            z-index: 2000; opacity: 0; transition: opacity 0.3s, top 0.3s;
+            pointer-events: none;
+        }
+        .notification.show { opacity: 1; top: 40px; }
+        .notification.success { background-color: #013220; color: #DAA520; border: 1px solid #DAA520; }
+        
+        /* --- AI Assistant Styles --- */
+        #ai-assistant-fab {
+            position: fixed; bottom: 20px; right: 20px; z-index: 1000;
+            background-color: #DAA520; color: #0a1412; width: 60px; height: 60px;
+            font-size: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 4px 20px rgba(218, 165, 32, 0.6);
+            transition: all 0.3s ease; animation: pulse 2s infinite;
+        }
+        #ai-assistant-fab:hover { transform: scale(1.1); box-shadow: 0 6px 25px rgba(218, 165, 32, 0.8); }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
+        #ai-assistant-modal { position:fixed; z-index: 1001; transition: opacity 0.3s ease-in-out; }
+        #chat-container { background: #0a1412; border: 1px solid #DAA520; box-shadow: 0 0 30px rgba(218, 165, 32, 0.3); transition: transform 0.3s ease-in-out; max-height: 80vh; }
+        .message { max-width: 80%; padding: 10px 15px; border-radius: 15px; margin-bottom: 10px; line-height: 1.4; }
+        .user-message { background-color: #DAA520; color: #0a1412; align-self: flex-end; border-bottom-right-radius: 3px; }
+        .assistant-message { background-color: rgba(240, 230, 210, 0.1); color: #f0e6d2; align-self: flex-start; border-bottom-left-radius: 3px; }
+    </style>
+</head>
+<body class="overflow-y-hidden">
+
+    <div class="animated-background"></div>
+    <div id="gold-dust-container"></div>
+    <div id="notification" class="notification"></div>
+
+    <!-- Page 1: Landing -->
+    <div id="page1" class="page active">
+        <div class="text-center p-4">
+            <h1 class="logo-glow text-6xl md:text-9xl">Gen'Z</h1>
+            <p class="mt-8 text-xl md:text-2xl tracking-wider opacity-90">“Turning memories into timeless frames.”</p>
+            <button onclick="navigateTo('page2')" class="gold-button font-royal text-lg py-3 px-10 rounded-lg mt-12 tracking-widest">
+                Explore Our Frames &rarr;
+            </button>
+        </div>
+    </div>
+
+    <!-- Page 2: Main Content -->
+    <div id="page2" class="page">
+        <div class="w-full max-w-6xl mx-auto px-4 pt-20 space-y-24">
+            <section class="text-center">
+                <a href="javascript:navigateTo('page-gallery')" class="cursor-pointer group"><h2 class="font-royal gold-text text-4xl md:text-5xl tracking-wider group-hover:text-white transition-colors">Our Work</h2></a>
+                <p class="mt-4 text-lg opacity-80">A preview of our premium, handcrafted frames.</p>
+                <div id="work-preview-grid" class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+                <button onclick="navigateTo('page-gallery')" class="gold-button font-royal text-lg py-2 px-8 rounded-lg mt-12 tracking-widest">View Full Gallery</button>
+            </section>
+            <section class="text-center">
+                <h2 class="font-royal gold-text text-4xl md:text-5xl tracking-wider">Choose Your Frame</h2>
+                <p class="mt-4 text-lg opacity-80">Select a size to proceed with your order.</p>
+                <div class="mt-12 grid grid-cols-2 md:grid-cols-3 gap-6">
+                    <div class="price-card rounded-lg p-6 text-center" onclick="selectFrame('12x18', '₹800')"><p class="text-2xl font-bold">12 × 18</p><p class="gold-text text-xl mt-2">₹800</p><button class="gold-button font-royal text-md py-2 rounded-lg mt-4 w-full">Place Order</button></div>
+                    <div class="price-card rounded-lg p-6 text-center" onclick="selectFrame('12x8 (A4)', '₹500')"><p class="text-2xl font-bold">12 × 8 (A4)</p><p class="gold-text text-xl mt-2">₹500</p><button class="gold-button font-royal text-md py-2 rounded-lg mt-4 w-full">Place Order</button></div>
+                    <div class="price-card rounded-lg p-6 text-center" onclick="selectFrame('16x24', '₹1800')"><p class="text-2xl font-bold">16 × 24</p><p class="gold-text text-xl mt-2">₹1800</p><button class="gold-button font-royal text-md py-2 rounded-lg mt-4 w-full">Place Order</button></div>
+                    <div class="price-card rounded-lg p-6 text-center" onclick="selectFrame('20x30', '₹2800')"><p class="text-2xl font-bold">20 × 30</p><p class="gold-text text-xl mt-2">₹2800</p><button class="gold-button font-royal text-md py-2 rounded-lg mt-4 w-full">Place Order</button></div>
+                    <div class="price-card rounded-lg p-6 text-center" onclick="selectFrame('16x20', '₹1700')"><p class="text-2xl font-bold">16 × 20</p><p class="gold-text text-xl mt-2">₹1700</p><button class="gold-button font-royal text-md py-2 rounded-lg mt-4 w-full">Place Order</button></div>
+                    <div class="price-card rounded-lg p-6 text-center" onclick="selectFrame('10x15', '₹700')"><p class="text-2xl font-bold">10 × 15</p><p class="gold-text text-xl mt-2">₹700</p><button class="gold-button font-royal text-md py-2 rounded-lg mt-4 w-full">Place Order</button></div>
+                </div>
+            </section>
+            <section class="text-center">
+                <h2 class="font-royal gold-text text-4xl md:text-5xl tracking-wider">What Our Customers Say</h2>
+                <p class="mt-4 text-lg opacity-80">Memories we've helped frame, stories they've shared.</p>
+                <div id="reviews-grid" class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+                <button onclick="navigateTo('page-review-form')" class="gold-button font-royal text-lg py-2 px-8 rounded-lg mt-12 tracking-widest">Write Your Review</button>
+            </section>
+        </div>
+    </div>
+
+    <!-- Page Gallery: Full Showcase -->
+    <div id="page-gallery" class="page">
+        <div class="w-full max-w-7xl mx-auto text-center px-4 pt-16">
+            <h2 class="font-royal gold-text text-4xl md:text-5xl tracking-wider">Our Full Gallery</h2>
+            <p class="mt-4 text-lg opacity-80">Explore the depth and detail of our craftsmanship.</p>
+            <div id="full-gallery-grid" class="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
+            <button onclick="navigateTo('page2')" class="gold-button font-royal text-xl py-3 px-12 rounded-lg mt-16 tracking-widest">← Back to Frames</button>
+        </div>
+    </div>
+    
+    <!-- Page: Review Form -->
+    <div id="page-review-form" class="page flex items-center justify-center">
+        <div class="w-full max-w-lg text-center p-4">
+            <h2 class="font-royal gold-text text-4xl md:text-5xl tracking-wider">Share Your Experience</h2>
+            <p class="mt-4 text-lg opacity-80">We value your feedback. Let us know what you think!</p>
+            <form id="review-form" class="mt-8 space-y-6 text-left">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div><label for="reviewer-name" class="block text-sm font-medium opacity-80 mb-2">Your Name</label><input type="text" id="reviewer-name" class="gold-input w-full p-2 rounded-md" required></div>
+                    <div><label for="reviewer-location" class="block text-sm font-medium opacity-80 mb-2">Your Location (e.g., City)</label><input type="text" id="reviewer-location" class="gold-input w-full p-2 rounded-md" required></div>
+                </div>
+                <div>
+                    <label class="block text-sm text-center font-medium opacity-80 mb-2">Your Rating</label>
+                    <div id="star-rating" class="star-rating"><span class="star" data-value="1">★</span><span class="star" data-value="2">★</span><span class="star" data-value="3">★</span><span class="star" data-value="4">★</span><span class="star" data-value="5">★</span></div>
+                    <input type="hidden" id="rating-value" value="0">
+                </div>
+                <div><label for="review-text" class="block text-sm font-medium opacity-80 mb-2">Your Review</label><textarea id="review-text" rows="4" class="gold-textarea w-full p-2 rounded-md" required></textarea></div>
+                <div class="text-center">
+                    <button type="submit" id="submit-review-btn" class="gold-button font-royal text-lg py-3 px-10 rounded-lg tracking-widest">Submit Review</button>
+                    <button type="button" onclick="navigateTo('page2')" class="block mx-auto mt-6 text-gray-400 hover:text-white transition-colors">← Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Page: Order Confirmation -->
+    <div id="page3" class="page flex items-center justify-center">
+        <div class="w-full max-w-lg text-center p-4">
+            <h2 class="font-royal gold-text text-4xl md:text-5xl tracking-wider">Final Step</h2>
+            <p class="mt-4 text-lg opacity-80">Please enter your number to proceed to WhatsApp.</p>
+            <div class="mt-8 max-w-sm mx-auto">
+                 <input type="tel" id="customer-phone" placeholder="Your 10-digit phone number" class="gold-input w-full text-center text-lg p-3 rounded-lg">
+                 <p id="phone-error" class="text-red-400 text-sm mt-2 h-4"></p>
+            </div>
+            <button onclick="proceedToWhatsApp()" class="gold-button inline-block font-royal text-lg py-3 px-10 rounded-lg mt-4 tracking-widest">Order on WhatsApp</button>
+            <button onclick="navigateTo('page2')" class="block mx-auto mt-6 text-gray-400 hover:text-white transition-colors">← Change selection</button>
+        </div>
+    </div>
+    
+    <!-- AI Assistant FAB -->
+    <div id="ai-assistant-fab" onclick="toggleChat(true)">✨</div>
+    <div id="ai-assistant-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center p-4 opacity-0 pointer-events-none" onclick="toggleChat(false)">
+        <div id="chat-container" class="w-full max-w-lg rounded-t-lg transform translate-y-full" onclick="event.stopPropagation();">
+            <div class="p-4 border-b gold-border flex justify-between items-center"><h3 class="font-royal gold-text text-xl">Gen'Z AI Assistant</h3><button onclick="toggleChat(false)" class="text-f0e6d2 hover:text-white text-2xl leading-none">&times;</button></div>
+            <div id="chat-log" class="p-4 h-80 overflow-y-auto flex flex-col space-y-2"></div>
+            <div class="p-4 border-t gold-border"><form id="chat-form" class="flex space-x-2"><input id="chat-input" type="text" placeholder="Ask about frames, price..." class="gold-input w-full p-2 rounded-md"><button type="submit" class="gold-button rounded-md px-4 font-bold text-lg">→</button></form></div>
+        </div>
+    </div>
+    
+    <script type="module">
+        // Firebase Imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- Firebase Setup ---
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "DEMO", authDomain: "DEMO", projectId: "DEMO" };
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Authenticate user
+        (async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Authentication failed:", error);
+            }
+        })();
+
+        // --- Page State ---
+        let selectedFrameInfo = { size: '', price: '' };
+        let galleryImages = [
+            'https://i.ibb.co/0pZZK9nh/framea2.jpg', 'https://i.ibb.co/27Q293Fz/framea3.jpg',
+            'https://i.ibb.co/hFNGdMgB/framea4.jpg', 'https://i.ibb.co/KcLfJh5F/framea6.jpg',
+            'https://i.ibb.co/G4G7wzJs/framea1.jpg', 'https://i.ibb.co/NMLPr6z/framea5.jpg',
+            'https://i.ibb.co/FbzT03qM/1230011.jpg', 'https://i.ibb.co/vxgVWqLc/1230016.jpg',
+            'https://i.ibb.co/VpCh7mYZ/1230015.jpg', 'https://i.ibb.co/233hTzwC/1230019.jpg',
+            'https://i.ibb.co/JWFwzzYx/123009.png', 'https://i.ibb.co/yn0d7mhz/1230022.jpg',
+            'https://i.ibb.co/LDTwGmhH/1230012.jpg', 'https://i.ibb.co/tMKdmgkL/1230018.jpg',
+            'https://i.ibb.co/Fj4qSQS/1230024.jpg'
+        ];
+
+        // --- Global Navigation ---
+        window.navigateTo = function(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) targetPage.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.body.style.overflowY = pageId === 'page1' ? 'hidden' : 'auto';
+        }
+
+        // --- Order Flow ---
+        window.selectFrame = function(size, price) {
+            selectedFrameInfo = { size, price };
+            navigateTo('page3');
+        }
+
+        window.proceedToWhatsApp = function() {
+            const phoneInput = document.getElementById('customer-phone');
+            const errorEl = document.getElementById('phone-error');
+            const userNumber = phoneInput.value.trim();
+            if (!/^\d{10}$/.test(userNumber)) {
+                errorEl.textContent = 'Please enter a valid 10-digit number.';
+                phoneInput.focus();
+                return;
+            }
+            errorEl.textContent = '';
+            const businessNumber = '919876543210'; // IMPORTANT: Replace with your number
+            const message = `Hii Gen’z Photo Frame, we are looking for a Premium Photo Frame (${selectedFrameInfo.size}). Can you provide us? My number is ${userNumber}`;
+            const whatsappUrl = `https://wa.me/${businessNumber}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // --- Review System ---
+        const reviewForm = document.getElementById('review-form');
+        const starRatingContainer = document.getElementById('star-rating');
+        const ratingValueInput = document.getElementById('rating-value');
+        const reviewsGrid = document.getElementById('reviews-grid');
+        const submitReviewBtn = document.getElementById('s
